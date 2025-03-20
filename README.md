@@ -2,231 +2,198 @@
   <img src="assets/logo.jpg" width="200"/>
 </p>
 
-English | [中文](README_zh.md) | [한국어](README_ko.md) | [日本語](README_ja.md)
+# OpenManus Web Dashboard
 
 [![GitHub stars](https://img.shields.io/github/stars/mannaandpoem/OpenManus?style=social)](https://github.com/mannaandpoem/OpenManus/stargazers)
-&ensp;
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) &ensp;
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Discord Follow](https://dcbadge.vercel.app/api/server/DYn29wFk9z?style=flat)](https://discord.gg/DYn29wFk9z)
 
-# 👋 OpenManus
+> An open-source framework for building and managing general AI agents with support for both Claude and OpenAI models
 
-Manus is incredible, but OpenManus can achieve any idea without an *Invite Code* 🛫!
+[English](README.md) | [中文](README_zh.md) | [한국어](README_ko.md) | [日本語](README_ja.md)
 
-Our team members [@Xinbin Liang](https://github.com/mannaandpoem) and [@Jinyu Xiang](https://github.com/XiangJinyu) (core authors), along with [@Zhaoyang Yu](https://github.com/MoshiQAQ), [@Jiayi Zhang](https://github.com/didiforgithub), and [@Sirui Hong](https://github.com/stellaHSR), we are from [@MetaGPT](https://github.com/geekan/MetaGPT). The prototype is launched within 3 hours and we are keeping building!
+## 🌟 Overview
 
-It's a simple implementation, so we welcome any suggestions, contributions, and feedback!
+OpenManus is a powerful open-source alternative to commercial agent platforms, allowing you to build and manage AI agents without restrictions. The web dashboard provides an intuitive interface for configuring, monitoring, and interacting with your agents.
 
-Enjoy your own agent with OpenManus!
-
-We're also excited to introduce [OpenManus-RL](https://github.com/OpenManus/OpenManus-RL), an open-source project dedicated to reinforcement learning (RL)- based (such as GRPO) tuning methods for LLM agents, developed collaboratively by researchers from UIUC and OpenManus.
-
-## Project Demo
-
-<video src="https://private-user-images.githubusercontent.com/61239030/420168772-6dcfd0d2-9142-45d9-b74e-d10aa75073c6.mp4?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDEzMTgwNTksIm5iZiI6MTc0MTMxNzc1OSwicGF0aCI6Ii82MTIzOTAzMC80MjAxNjg3NzItNmRjZmQwZDItOTE0Mi00NWQ5LWI3NGUtZDEwYWE3NTA3M2M2Lm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMDclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzA3VDAzMjIzOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTdiZjFkNjlmYWNjMmEzOTliM2Y3M2VlYjgyNDRlZDJmOWE3NWZhZjE1MzhiZWY4YmQ3NjdkNTYwYTU5ZDA2MzYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.UuHQCgWYkh0OQq9qsUWqGsUbhG3i9jcZDAMeHjLt5T4" data-canonical-src="https://private-user-images.githubusercontent.com/61239030/420168772-6dcfd0d2-9142-45d9-b74e-d10aa75073c6.mp4?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDEzMTgwNTksIm5iZiI6MTc0MTMxNzc1OSwicGF0aCI6Ii82MTIzOTAzMC80MjAxNjg3NzItNmRjZmQwZDItOTE0Mi00NWQ5LWI3NGUtZDEwYWE3NTA3M2M2Lm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMDclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzA3VDAzMjIzOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTdiZjFkNjlmYWNjMmEzOTliM2Y3M2VlYjgyNDRlZDJmOWE3NWZhZjE1MzhiZWY4YmQ3NjdkNTYwYTU5ZDA2MzYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.UuHQCgWYkh0OQq9qsUWqGsUbhG3i9jcZDAMeHjLt5T4" controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit" style="max-height:640px; min-height: 200px"></video>
-
-## Installation
-
-We provide multiple installation methods to suit your needs.
-
-### Method 0: One-line Installation (Linux/Debian-based systems)
-
-For a quick installation on Debian-based systems (Ubuntu, Debian), you can use our one-line installer:
-
-```bash
-wget -O - https://raw.githubusercontent.com/mhm22332/OpenManuswebguidashboard/main/install.sh | sudo bash
-```
-
-This script will:
-- Install system dependencies
-- Clone the repository
-- Set up Python dependencies
-- Create a default configuration file
-
-After installation, follow the on-screen instructions to start the web dashboard.
-
-### Method 1: Using conda
-
-1. Create a new conda environment:
-
-```bash
-conda create -n open_manus python=3.12
-conda activate open_manus
-```
-
-2. Clone the repository:
-
-```bash
-git clone git clone https://github.com/mhm22332/OpenManuswebguidashboard.git
-cd OpenManuswebguidashboard
-```
-
-3. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-### Method 2: Using uv (Recommended)
-
-1. Install uv (A fast Python package installer and resolver):
-
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-2. Clone the repository:
-
-```bash
-git clone https://github.com/mhm22332/OpenManuswebguidashboard.git
-cd OpenManuswebguidashboard
-```
-
-3. Create a new virtual environment and activate it:
-
-```bash
-uv venv --python 3.12
-source .venv/bin/activate  # On Unix/macOS
-# Or on Windows:
-# .venv\Scripts\activate
-```
-
-4. Install dependencies:
-
-```bash
-uv pip install -r requirements.txt
-```
-
-### Browser Automation Tool (Optional)
-```bash
-playwright install
-```
-
-## Configuration
-
-OpenManus requires configuration for the LLM APIs it uses. Follow these steps to set up your configuration:
-
-1. Create a `config.toml` file in the `config` directory (you can copy from the example):
-
-```bash
-cp config/config.example.toml config/config.toml
-```
-
-2. Edit `config/config.toml` to add your API keys and customize settings:
-
-The default configuration uses Claude 3.7 Sonnet:
-
-```toml
-# Global LLM configuration
-[llm]
-model = "claude-3-7-sonnet-20250219"        # The LLM model to use
-base_url = "https://api.anthropic.com/v1/"  # API endpoint URL
-api_key = "sk-ant-..."                      # Your Anthropic API key
-max_tokens = 8192                           # Maximum number of tokens in the response
-temperature = 0.0                           # Controls randomness
-```
-
-To use OpenAI models instead, update the configuration as follows:
-
-```toml
-# Global LLM configuration
-[llm]
-model = "gpt-4o"                           # The OpenAI model to use
-base_url = "https://api.openai.com/v1"     # OpenAI API endpoint
-api_key = "sk-..."                         # Your OpenAI API key
-max_tokens = 4096                          # Maximum tokens for response
-temperature = 0.0                          # Controls randomness
-```
-
-The configuration also supports other providers like AWS Bedrock, Azure OpenAI, and Ollama. See the example config file for more options.
-
-## Quick Start
-
-One line for run OpenManus:
-
-```bash
-python main.py
-```
-
-Then input your idea via terminal!
-
-For MCP tool version, you can run:
-```bash
-python run_mcp.py
-```
-
-For unstable multi-agent version, you also can run:
-
-```bash
-python run_flow.py
-```
-
-### Web Dashboard Interface
-
-OpenManus now includes a powerful web GUI with usage dashboard and LLM configuration capabilities. The web interface provides:
-
-1. **Usage Dashboard**: Monitor your API calls, token usage, and performance metrics through interactive charts.
-2. **Prompt Interface**: Interact with OpenManus through a user-friendly chat interface.
-3. **LLM Configuration**: Easily manage and switch between different LLM providers and models without editing config files.
-4. **Module Overview**: View all available agents and tools in the system.
-
-To run the web interface:
-
-```bash
-python run_web.py
-```
-
-Then open your browser and navigate to:
-```
-http://localhost:8000
-```
-
-The web dashboard has been enhanced with robust error handling and diagnostic information, making it easier to troubleshoot issues in different environments. If you encounter any problems, detailed error messages will help identify the cause.
+### Key Features
+- 🤖 **Multiple LLM Support**: Works with Claude 3.7 Sonnet, GPT-4o, and other models
+- 📊 **Usage Dashboard**: Monitor API calls, token usage, and performance metrics
+- 💬 **Interactive Interface**: Chat with your agents through a user-friendly interface
+- ⚙️ **Easy Configuration**: Configure LLM providers and models without editing files
+- 🧩 **Modular Architecture**: Mix and match different agents and tools
 
 <p align="center">
   <img src="assets/web_dashboard.jpg" width="800" alt="OpenManus Web Dashboard"/>
 </p>
 
-## Troubleshooting
+## 🚀 Quick Installation
 
-If you encounter issues with the web dashboard:
+### One-line Installation (Linux/Debian)
 
-1. Check the console output for detailed error messages and diagnostic information
-2. Ensure all dependencies are correctly installed with `pip install -r requirements.txt`
-3. Verify your Python environment is properly configured (Python 3.12+ recommended)
-4. Make sure your `config.toml` file is correctly set up with valid API keys
+```bash
+wget -O - https://raw.githubusercontent.com/mhm22332/OpenManuswebguidashboard/main/install.sh | sudo bash
+```
 
-For container environments, the web dashboard includes specialized error handling to work around potential import issues.
+This automatically installs all dependencies, clones the repository, and sets up the configuration.
 
-## How to contribute
+### Using Conda
 
-We welcome any friendly suggestions and helpful contributions! Just create issues or submit pull requests.
+```bash
+conda create -n open_manus python=3.12
+conda activate open_manus
+git clone https://github.com/mhm22332/OpenManuswebguidashboard.git
+cd OpenManuswebguidashboard
+pip install -r requirements.txt
+```
 
-Or contact @mannaandpoem via 📧email: mannaandpoem@gmail.com
+### Using uv (Recommended)
 
-**Note**: Before submitting a pull request, please use the pre-commit tool to check your changes. Run `pre-commit run --all-files` to execute the checks.
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+git clone https://github.com/mhm22332/OpenManuswebguidashboard.git
+cd OpenManuswebguidashboard
+uv venv --python 3.12
+source .venv/bin/activate  # On Unix/macOS
+# .venv\Scripts\activate   # On Windows
+uv pip install -r requirements.txt
+```
 
-## Community Group
-Join our networking group on Feishu and share your experience with other developers!
+### Optional: Browser Automation Tools
+```bash
+playwright install
+```
 
-<div align="center" style="display: flex; gap: 20px;">
-    <img src="assets/community_group.jpg" alt="OpenManus 交流群" width="300" />
+## ⚙️ Configuration
+
+OpenManus supports multiple LLM providers through a simple configuration file:
+
+1. Create your config file:
+   ```bash
+   cp config/config.example.toml config/config.toml
+   ```
+
+2. Choose your preferred LLM provider:
+
+   **Claude 3.7 Sonnet (Default):**
+   ```toml
+   [llm]
+   model = "claude-3-7-sonnet-20250219"        # The LLM model to use
+   base_url = "https://api.anthropic.com/v1/"  # API endpoint URL
+   api_key = "sk-ant-..."                      # Your Anthropic API key
+   max_tokens = 8192                           # Maximum tokens in response
+   temperature = 0.0                           # Controls randomness
+   ```
+
+   **OpenAI GPT-4o:**
+   ```toml
+   [llm]
+   model = "gpt-4o"                           # The OpenAI model to use
+   base_url = "https://api.openai.com/v1"     # OpenAI API endpoint
+   api_key = "sk-..."                         # Your OpenAI API key
+   max_tokens = 4096                          # Maximum tokens for response
+   temperature = 0.0                          # Controls randomness
+   ```
+
+   The configuration also supports AWS Bedrock, Azure OpenAI, and local Ollama models.
+
+## 🖥️ Usage
+
+### Running the Web Dashboard
+
+Launch the web interface with:
+```bash
+python run_web.py
+```
+
+Then access it at http://localhost:8000
+
+### Other Run Options
+
+**Terminal Interface:**
+```bash
+python main.py
+```
+
+**MCP Tool Version:**
+```bash
+python run_mcp.py
+```
+
+**Multi-Agent Mode (Experimental):**
+```bash
+python run_flow.py
+```
+
+## 🔍 Web Dashboard Features
+
+### 1. Usage Dashboard
+Monitor your API usage with interactive charts:
+- Total requests and tokens consumed
+- Requests by model type
+- Historical usage patterns
+
+### 2. Prompt Interface
+Interact with your agents through a familiar chat interface:
+- Send prompts and receive responses
+- View execution logs in real-time
+- Switch between different LLM models
+
+### 3. LLM Configuration
+Manage your LLM providers and models:
+- Add, edit and remove LLM profiles
+- Configure API endpoints and parameters
+- Set default models for different tasks
+
+### 4. Module Management
+View and manage available agents and tools:
+- List installed agents and capabilities
+- Monitor tool usage and performance
+
+## 🛠️ Troubleshooting
+
+If you encounter issues:
+
+1. **Check the console output** for detailed error messages and diagnostic information
+2. **Verify dependencies** are correctly installed with `pip install -r requirements.txt`
+3. **Check your Python version** - Python 3.12+ is recommended
+4. **Validate your config.toml** file has the correct API keys and endpoints
+5. **For container environments**, we've added specialized error handling to work around import issues
+
+## 🤝 Contributing
+
+We welcome contributions of all kinds! Please feel free to:
+- Open issues for bug reports or feature requests
+- Submit pull requests for improvements
+- Share feedback and suggestions
+
+Before submitting a PR, please run `pre-commit run --all-files` to ensure code quality.
+
+Contact: [@mannaandpoem](https://github.com/mannaandpoem) (Email: mannaandpoem@gmail.com)
+
+## 👥 Community
+
+Join our community to discuss ideas, get help, and share your projects:
+
+<div align="center">
+    <img src="assets/community_group.jpg" alt="OpenManus Community Group" width="300" />
 </div>
 
-## Star History
+## 🙏 Acknowledgements
+
+- [anthropic-computer-use](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo)
+- [browser-use](https://github.com/browser-use/browser-use)
+- [AAAJ](https://github.com/metauto-ai/agent-as-a-judge)
+- [MetaGPT](https://github.com/geekan/MetaGPT)
+- [OpenHands](https://github.com/All-Hands-AI/OpenHands)
+- [SWE-agent](https://github.com/SWE-agent/SWE-agent)
+
+## 📈 Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=mannaandpoem/OpenManus&type=Date)](https://star-history.com/#mannaandpoem/OpenManus&Date)
 
-## Acknowledgement
+## 📚 Citation
 
-Thanks to [anthropic-computer-use](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo)
-and [browser-use](https://github.com/browser-use/browser-use) for providing basic support for this project!
-
-Additionally, we are grateful to [AAAJ](https://github.com/metauto-ai/agent-as-a-judge), [MetaGPT](https://github.com/geekan/MetaGPT), [OpenHands](https://github.com/All-Hands-AI/OpenHands) and [SWE-agent](https://github.com/SWE-agent/SWE-agent).
-
-OpenManus is built by contributors from MetaGPT. Huge thanks to this agent community!
-
-## Cite
 ```bibtex
 @misc{openmanus2025,
   author = {Xinbin Liang and Jinyu Xiang and Zhaoyang Yu and Jiayi Zhang and Sirui Hong},
