@@ -14,11 +14,24 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+# Function to check available space and inode status
+check_space() {
+    echo "Checking system resources..."
+
+    # Check disk space
+    AVAILABLE_SPACE=$(df -h / | awk 'NR==2 {print $4}')
+    AVAILABLE_INODES=$(df -i / | awk 'NR==2 {print $4}')
+
+    echo "Available disk space: $AVAILABLE_SPACE"
+    echo "Available inodes: $AVAILABLE_INODES"
+    echo "Resource check completed."
+}
+
 # Function to install minimal system dependencies
 install_minimal_deps() {
     echo "Installing minimal system dependencies..."
     apt-get update
-    apt-get install -y python3 python3-pip
+    apt-get install -y --no-install-recommends python3 python3-pip
     apt-get install -y --no-install-recommends python3-uvicorn python3-fastapi
     echo "System dependencies installed successfully."
 }
@@ -56,7 +69,7 @@ setup_minimal_env() {
     echo "Installing minimal Python dependencies..."
     # Use the minimal requirements file
     if [ -f "requirements-minimal.txt" ]; then
-        pip3 install --break-system-packages -r requirements-minimal.txt
+        pip3 install --break-system-packages --no-cache-dir -r requirements-minimal.txt
     else
         # Create a minimal requirements file if it doesn't exist
         cat > requirements-minimal.txt << EOF
@@ -70,12 +83,17 @@ tomli>=2.0.0
 aiofiles~=24.1.0
 pydantic_core~=2.27.2
 loguru~=0.7.3
+python-multipart>=0.0.7
 
 # For web dashboard only
 tiktoken~=0.9.0
 EOF
-        pip3 install --break-system-packages -r requirements-minimal.txt
+        pip3 install --break-system-packages --no-cache-dir -r requirements-minimal.txt
     fi
+
+    # Ensure critical packages are installed regardless
+    echo "Installing additional required packages..."
+    pip3 install --break-system-packages --no-cache-dir --ignore-installed python-multipart fastapi uvicorn
 
     echo "Python environment setup complete."
 }
@@ -95,10 +113,6 @@ find . -type f -name "*.pyc" -delete
 find . -type f -name "*.pyo" -delete
 find . -type f -name "*.pyd" -delete
 
-# Clean git objects (if you don't need git history)
-# Uncomment if you want to reduce git storage
-# git gc --aggressive --prune=now
-
 echo "Cleanup completed!"
 EOF
     chmod +x cleanup.sh
@@ -107,6 +121,7 @@ EOF
 
 # Main installation flow
 main() {
+    check_space
     install_minimal_deps
     clone_repo_minimal
     setup_minimal_env
