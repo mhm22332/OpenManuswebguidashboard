@@ -135,6 +135,30 @@ For unstable multi-agent version, you also can run:
 python run_flow.py
 ```
 
+### Web Dashboard Interface
+
+OpenManus now includes a powerful web GUI with usage dashboard and LLM configuration capabilities. The web interface provides:
+
+1. **Usage Dashboard**: Monitor your API calls, token usage, and performance metrics through interactive charts.
+2. **Prompt Interface**: Interact with OpenManus through a user-friendly chat interface.
+3. **LLM Configuration**: Easily manage and switch between different LLM providers and models without editing config files.
+4. **Module Overview**: View all available agents and tools in the system.
+
+To run the web interface:
+
+```bash
+python run_web.py
+```
+
+Then open your browser and navigate to:
+```
+http://localhost:8000
+```
+
+<p align="center">
+  <img src="assets/web_dashboard.jpg" width="800" alt="OpenManus Web Dashboard"/>
+</p>
+
 ## How to contribute
 
 We welcome any friendly suggestions and helpful contributions! Just create issues or submit pull requests.
