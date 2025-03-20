@@ -1,6 +1,6 @@
 #!/bin/bash
 # OpenManus Robust Installation Script
-# With enhanced handling for large packages
+# With enhanced handling for large packages and system package conflicts
 
 set -e  # Exit on error
 
@@ -50,9 +50,17 @@ install_system_deps() {
     # Clean apt cache first to make space
     apt-get clean
 
-    # Install dependencies with progress display
+    # Install system dependencies - prioritize apt packages over pip
+    echo "Installing Python and system packages..."
     apt-get install -y git python3 python3-dev python3-pip python3-venv
-    apt-get install -y python3-uvicorn python3-fastapi
+
+    echo "Installing FastAPI and Uvicorn via apt..."
+    apt-get install -y python3-fastapi python3-uvicorn
+
+    # Install other common dependencies via apt to avoid pip conflicts
+    echo "Installing additional system packages..."
+    apt-get install -y python3-pydantic python3-aiofiles python3-tomli python3-httpx
+
     echo "System dependencies installed successfully."
 }
 
@@ -70,6 +78,23 @@ clone_repo() {
     echo "Repository cloned/updated successfully."
 }
 
+# Create a custom requirements file without system packages
+create_custom_requirements() {
+    echo "Creating custom requirements file to avoid conflicts..."
+
+    # Create a list of packages already installed by system
+    SYSTEM_PACKAGES="fastapi uvicorn pydantic aiofiles tomli httpx starlette"
+
+    # Create a temporary requirements file excluding system packages
+    if [ -f "requirements.txt" ]; then
+        cat requirements.txt | grep -v -E "^($(echo $SYSTEM_PACKAGES | tr ' ' '|'))[^a-zA-Z0-9]" > custom_requirements.txt
+        echo "Created custom_requirements.txt without system-managed packages."
+    else
+        echo "WARNING: requirements.txt not found!"
+        touch custom_requirements.txt
+    fi
+}
+
 # Function to setup Python environment and install dependencies
 setup_python_env() {
     echo "Setting up Python environment..."
@@ -85,15 +110,13 @@ setup_python_env() {
         echo "Created config.toml from example. Please edit it with your API keys."
     fi
 
-    echo "Installing Python dependencies..."
-    # Break up pip installs into smaller chunks to avoid memory issues
-    # First install essential packages
-    echo "Installing core dependencies..."
-    pip3 install --break-system-packages --no-cache-dir pydantic fastapi uvicorn httpx tomli aiofiles loguru
+    # Create custom requirements file
+    create_custom_requirements
 
-    # Then install optional packages
-    echo "Installing additional dependencies..."
-    pip3 install --break-system-packages --no-cache-dir -r requirements.txt --upgrade-strategy only-if-needed
+    echo "Installing Python dependencies..."
+    # Use --ignore-installed to avoid conflicts with system packages
+    echo "Installing remaining dependencies..."
+    pip3 install --break-system-packages --no-cache-dir --ignore-installed -r custom_requirements.txt
 
     echo "Python environment setup complete."
 }
@@ -108,6 +131,10 @@ cleanup() {
     # Remove temporary files
     find . -type d -name __pycache__ -exec rm -rf {} +
     find . -type f -name "*.pyc" -delete
+    # Remove temporary requirements file
+    if [ -f "custom_requirements.txt" ]; then
+        rm custom_requirements.txt
+    fi
     echo "Cleanup completed."
 }
 
