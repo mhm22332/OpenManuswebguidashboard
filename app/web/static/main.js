@@ -1,0 +1,506 @@
+// Charts
+let modelChart;
+let dailyChart;
+
+// Main initialization
+document.addEventListener('DOMContentLoaded', function () {
+    initCharts();
+    loadStats();
+    loadConfig();
+    loadAgentsAndTools();
+
+    // Setup event listeners
+    document.getElementById('refresh-stats').addEventListener('click', loadStats);
+    document.getElementById('save-profile').addEventListener('click', saveNewProfile);
+    document.getElementById('update-profile').addEventListener('click', updateProfile);
+    document.getElementById('send-prompt').addEventListener('click', sendPrompt);
+
+    // Tab switching event listeners
+    document.querySelectorAll('.nav-link').forEach(tab => {
+        tab.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+
+            // Hide all tabs and show the target
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show', 'active');
+            });
+            target.classList.add('show', 'active');
+
+            // Update active tab
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+});
+
+// Initialize charts
+function initCharts() {
+    // Model distribution chart
+    const modelCtx = document.getElementById('model-chart').getContext('2d');
+    modelChart = new Chart(modelCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [
+                    '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'
+                ],
+                hoverBackgroundColor: [
+                    '#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617'
+                ],
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // Daily usage chart
+    const dailyCtx = document.getElementById('daily-chart').getContext('2d');
+    dailyChart = new Chart(dailyCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Requests',
+                lineTension: 0.3,
+                backgroundColor: "rgba(78, 115, 223, 0.05)",
+                borderColor: "rgba(78, 115, 223, 1)",
+                pointRadius: 3,
+                pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                pointBorderColor: "rgba(78, 115, 223, 1)",
+                pointHoverRadius: 3,
+                pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                pointHitRadius: 10,
+                pointBorderWidth: 2,
+                data: []
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+}
+
+// Load usage statistics
+async function loadStats() {
+    try {
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+
+        // Update summary cards
+        document.getElementById('total-requests').textContent = data.total_requests;
+        document.getElementById('total-tokens').textContent = data.token_usage.total;
+
+        // Find the most used model
+        let mostUsedModel = '-';
+        let maxRequests = 0;
+        for (const [model, count] of Object.entries(data.requests_by_model)) {
+            if (count > maxRequests) {
+                maxRequests = count;
+                mostUsedModel = model;
+            }
+        }
+        document.getElementById('active-model').textContent = mostUsedModel;
+
+        // Update model chart
+        updateModelChart(data.requests_by_model);
+
+        // Update daily chart
+        updateDailyChart(data.requests_by_day);
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
+}
+
+// Update model distribution chart
+function updateModelChart(requestsByModel) {
+    const labels = Object.keys(requestsByModel);
+    const data = Object.values(requestsByModel);
+
+    modelChart.data.labels = labels;
+    modelChart.data.datasets[0].data = data;
+    modelChart.update();
+}
+
+// Update daily usage chart
+function updateDailyChart(requestsByDay) {
+    const labels = Object.keys(requestsByDay).sort();
+    const data = labels.map(day => requestsByDay[day]);
+
+    dailyChart.data.labels = labels;
+    dailyChart.data.datasets[0].data = data;
+    dailyChart.update();
+}
+
+// Load LLM and module configurations
+async function loadConfig() {
+    try {
+        const response = await fetch('/api/config');
+        const data = await response.json();
+
+        // Populate LLM profiles
+        const profilesContainer = document.getElementById('llm-profiles-container');
+        profilesContainer.innerHTML = '';
+
+        for (const [name, config] of Object.entries(data.llm)) {
+            const isDefault = name === 'default';
+            const card = createProfileCard(name, config, isDefault);
+            profilesContainer.appendChild(card);
+        }
+
+        // Attach event listeners to edit/delete buttons
+        document.querySelectorAll('.edit-profile').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const profileName = this.dataset.profile;
+                openEditModal(profileName, data.llm[profileName]);
+            });
+        });
+
+        document.querySelectorAll('.set-default-profile').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const profileName = this.dataset.profile;
+                setDefaultProfile(profileName);
+            });
+        });
+    } catch (error) {
+        console.error('Error loading config:', error);
+    }
+}
+
+// Create a profile card
+function createProfileCard(name, config, isDefault) {
+    const col = document.createElement('div');
+    col.className = 'col-md-4 mb-4';
+
+    col.innerHTML = `
+        <div class="card llm-profile-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">${name}</h5>
+                ${isDefault ? '<span class="badge bg-success">Default</span>' : ''}
+            </div>
+            <div class="card-body">
+                <p><strong>Model:</strong> ${config.model}</p>
+                <p><strong>API Type:</strong> ${config.api_type}</p>
+                <p><strong>Max Tokens:</strong> ${config.max_tokens}</p>
+                <p><strong>Temperature:</strong> ${config.temperature}</p>
+            </div>
+            <div class="card-footer">
+                <div class="llm-profile-actions">
+                    <button class="btn btn-sm btn-primary edit-profile" data-profile="${name}">
+                        <i class="bi bi-pencil"></i> Edit
+                    </button>
+                    ${!isDefault ? `
+                    <button class="btn btn-sm btn-success set-default-profile" data-profile="${name}">
+                        <i class="bi bi-check-circle"></i> Set Default
+                    </button>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+
+    return col;
+}
+
+// Open edit modal with profile data
+function openEditModal(profileName, config) {
+    document.getElementById('edit-profile-name').value = profileName;
+    document.getElementById('edit-model').value = config.model;
+    document.getElementById('edit-base-url').value = config.base_url;
+    document.getElementById('edit-api-key').value = config.api_key;
+    document.getElementById('edit-max-tokens').value = config.max_tokens;
+    document.getElementById('edit-temperature').value = config.temperature;
+    document.getElementById('edit-api-type').value = config.api_type;
+    document.getElementById('edit-api-version').value = config.api_version;
+
+    const modal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+    modal.show();
+}
+
+// Save new profile
+async function saveNewProfile() {
+    const profileName = document.getElementById('profile-name').value;
+    if (!profileName) {
+        alert('Profile name is required');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('model', document.getElementById('model').value);
+    formData.append('base_url', document.getElementById('base-url').value);
+    formData.append('api_key', document.getElementById('api-key').value);
+    formData.append('max_tokens', document.getElementById('max-tokens').value);
+    formData.append('temperature', document.getElementById('temperature').value);
+    formData.append('api_type', document.getElementById('api-type').value);
+    formData.append('api_version', document.getElementById('api-version').value);
+
+    try {
+        const response = await fetch(`/api/config/llm/${profileName}`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            // Close modal and reload config
+            bootstrap.Modal.getInstance(document.getElementById('newProfileModal')).hide();
+            document.getElementById('new-profile-form').reset();
+            loadConfig();
+        } else {
+            alert(`Error: ${result.message}`);
+        }
+    } catch (error) {
+        console.error('Error saving profile:', error);
+        alert('Failed to save profile');
+    }
+}
+
+// Update existing profile
+async function updateProfile() {
+    const profileName = document.getElementById('edit-profile-name').value;
+
+    const formData = new FormData();
+    formData.append('model', document.getElementById('edit-model').value);
+    formData.append('base_url', document.getElementById('edit-base-url').value);
+    formData.append('api_key', document.getElementById('edit-api-key').value);
+    formData.append('max_tokens', document.getElementById('edit-max-tokens').value);
+    formData.append('temperature', document.getElementById('edit-temperature').value);
+    formData.append('api_type', document.getElementById('edit-api-type').value);
+    formData.append('api_version', document.getElementById('edit-api-version').value);
+
+    try {
+        const response = await fetch(`/api/config/llm/${profileName}`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            // Close modal and reload config
+            bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+            loadConfig();
+        } else {
+            alert(`Error: ${result.message}`);
+        }
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        alert('Failed to update profile');
+    }
+}
+
+// Set profile as default
+async function setDefaultProfile(profileName) {
+    // This is a placeholder - in a real implementation,
+    // you would update the config file to set this profile as default
+    alert(`Set ${profileName} as default (not implemented)`);
+}
+
+// Load available agents and tools
+async function loadAgentsAndTools() {
+    try {
+        // Load agents
+        const agentsResponse = await fetch('/api/agents');
+        const agentsData = await agentsResponse.json();
+
+        const agentsList = document.getElementById('agents-list');
+        agentsList.innerHTML = '';
+
+        agentsData.agents.forEach(agent => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+                <div>
+                    <span class="module-title">${agent}</span>
+                </div>
+                <span class="badge bg-primary rounded-pill">Agent</span>
+            `;
+            agentsList.appendChild(li);
+        });
+
+        // Load tools
+        const toolsResponse = await fetch('/api/tools');
+        const toolsData = await toolsResponse.json();
+
+        const toolsList = document.getElementById('tools-list');
+        toolsList.innerHTML = '';
+
+        toolsData.tools.forEach(tool => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+                <div>
+                    <span class="module-title">${tool}</span>
+                </div>
+                <span class="badge bg-secondary rounded-pill">Tool</span>
+            `;
+            toolsList.appendChild(li);
+        });
+    } catch (error) {
+        console.error('Error loading agents and tools:', error);
+    }
+}
+
+// Send prompt to LLM
+async function sendPrompt() {
+    const promptInput = document.getElementById('prompt-input');
+    const prompt = promptInput.value.trim();
+
+    if (!prompt) {
+        return;
+    }
+
+    // Disable input while processing
+    promptInput.disabled = true;
+    document.getElementById('send-prompt').disabled = true;
+
+    // Add user message to the chat
+    addMessageToChat('user', prompt);
+
+    // Clear input
+    promptInput.value = '';
+
+    // Show thinking indicator
+    const thinkingMsg = addThinkingMessage();
+
+    try {
+        const response = await fetch('/api/prompt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: prompt
+            })
+        });
+
+        // Remove thinking indicator
+        thinkingMsg.remove();
+
+        if (response.ok) {
+            const data = await response.json();
+
+            // Add assistant response to chat
+            addMessageToChat('assistant', data.response);
+
+            // Update any usage stats
+            if (data.usage) {
+                document.getElementById('total-requests').textContent =
+                    parseInt(document.getElementById('total-requests').textContent) + 1;
+
+                document.getElementById('total-tokens').textContent =
+                    parseInt(document.getElementById('total-tokens').textContent) + data.usage.total_tokens;
+            }
+        } else {
+            // Show error message
+            addMessageToChat('system', 'Error: Failed to get response from server');
+        }
+    } catch (error) {
+        console.error('Error sending prompt:', error);
+        // Remove thinking indicator
+        thinkingMsg.remove();
+        // Show error message
+        addMessageToChat('system', `Error: ${error.message}`);
+    } finally {
+        // Re-enable input
+        promptInput.disabled = false;
+        document.getElementById('send-prompt').disabled = false;
+        promptInput.focus();
+    }
+}
+
+// Add message to chat
+function addMessageToChat(role, content) {
+    const chatMessages = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${role}-message`;
+
+    let avatar = '';
+    if (role === 'user') {
+        avatar = '<div class="avatar user-avatar"><i class="bi bi-person-fill"></i></div>';
+    } else if (role === 'assistant') {
+        avatar = '<div class="avatar assistant-avatar"><i class="bi bi-robot"></i></div>';
+    } else {
+        avatar = '<div class="avatar system-avatar"><i class="bi bi-info-circle"></i></div>';
+    }
+
+    messageDiv.innerHTML = `
+        ${avatar}
+        <div class="message-content">
+            <div class="message-text">${formatMessageContent(content)}</div>
+        </div>
+    `;
+
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    return messageDiv;
+}
+
+// Add thinking message (with loading animation)
+function addThinkingMessage() {
+    const chatMessages = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message assistant-message thinking';
+    messageDiv.innerHTML = `
+        <div class="avatar assistant-avatar"><i class="bi bi-robot"></i></div>
+        <div class="message-content">
+            <div class="message-text">
+                <div class="thinking-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    return messageDiv;
+}
+
+// Format message content (handle newlines, code blocks, etc.)
+function formatMessageContent(content) {
+    if (!content) return '';
+
+    // Convert newlines to <br>
+    let formatted = content.replace(/\n/g, '<br>');
+
+    // Detect and format code blocks
+    // This is a simple implementation - a more robust solution would use a library like marked.js
+    formatted = formatted.replace(/```([a-z]*)\n([\s\S]*?)\n```/g, function (match, language, code) {
+        return `<pre><code class="language-${language}">${code}</code></pre>`;
+    });
+
+    return formatted;
+}
