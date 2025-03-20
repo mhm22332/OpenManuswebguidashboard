@@ -77,6 +77,9 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('new-profile-form').reset();
         new bootstrap.Modal(document.getElementById('newProfileModal')).show();
     });
+
+    // Start system monitoring
+    startSystemMonitoring();
 });
 
 // Initialize charts
@@ -653,4 +656,82 @@ function addSuggestions(datalist, suggestions) {
         option.value = suggestion;
         datalist.appendChild(option);
     });
+}
+
+// System monitoring functions
+function startSystemMonitoring() {
+    // Initial update
+    updateSystemMetrics();
+
+    // Update every 5 seconds
+    setInterval(updateSystemMetrics, 5000);
+}
+
+async function updateSystemMetrics() {
+    try {
+        const response = await fetch('/api/system');
+        if (response.ok) {
+            const metrics = await response.json();
+            updateMetricDisplay(metrics);
+        } else {
+            console.error('Failed to fetch system metrics');
+            document.getElementById('system-status').className = 'badge bg-warning';
+            document.getElementById('system-status').textContent = 'Limited';
+        }
+    } catch (error) {
+        console.error('Error fetching system metrics:', error);
+        document.getElementById('system-status').className = 'badge bg-danger';
+        document.getElementById('system-status').textContent = 'Offline';
+    }
+}
+
+function updateMetricDisplay(metrics) {
+    // CPU usage
+    const cpuUsage = metrics.cpu_percent || 0;
+    document.getElementById('cpu-usage-value').textContent = `${cpuUsage.toFixed(1)}%`;
+    document.getElementById('cpu-gauge').style.width = `${cpuUsage}%`;
+
+    // Memory usage
+    const memUsed = formatBytes(metrics.memory_used || 0);
+    const memTotal = formatBytes(metrics.memory_total || 0);
+    const memPercent = metrics.memory_percent || 0;
+    document.getElementById('memory-usage-value').textContent = `${memUsed} / ${memTotal}`;
+    document.getElementById('memory-gauge').style.width = `${memPercent}%`;
+
+    // Disk usage
+    const diskUsed = formatBytes(metrics.disk_used || 0, true);
+    const diskTotal = formatBytes(metrics.disk_total || 0, true);
+    const diskPercent = metrics.disk_percent || 0;
+    document.getElementById('disk-usage-value').textContent = `${diskUsed} / ${diskTotal}`;
+    document.getElementById('disk-gauge').style.width = `${diskPercent}%`;
+
+    // Network usage
+    const netSent = formatBytes(metrics.net_sent_per_sec || 0, false, true);
+    const netRecv = formatBytes(metrics.net_recv_per_sec || 0, false, true);
+    document.getElementById('network-usage-value').textContent = `↓ ${netRecv}/s ↑ ${netSent}/s`;
+
+    // Network gauge - use percentage of a reasonable maximum (e.g., 10MB/s)
+    const netTotal = (metrics.net_sent_per_sec || 0) + (metrics.net_recv_per_sec || 0);
+    const netPercent = Math.min(100, (netTotal / (10 * 1024 * 1024)) * 100);
+    document.getElementById('network-gauge').style.width = `${netPercent}%`;
+
+    // Update system status
+    document.getElementById('system-status').className = 'badge bg-success';
+    document.getElementById('system-status').textContent = 'Online';
+}
+
+function formatBytes(bytes, showGB = false, showSpeed = false) {
+    if (bytes === 0) return '0 B';
+
+    const k = 1024;
+    const sizes = showSpeed
+        ? ['B', 'KB', 'MB', 'GB']
+        : ['B', 'KB', 'MB', 'GB', 'TB'];
+
+    if (showGB && bytes > k * k * k) {
+        return (bytes / (k * k * k)).toFixed(2) + ' GB';
+    }
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
