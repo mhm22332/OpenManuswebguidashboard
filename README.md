@@ -37,6 +37,8 @@ wget -O - https://raw.githubusercontent.com/mhm22332/OpenManuswebguidashboard/ma
 
 This automatically installs all dependencies, clones the repository, and sets up the configuration.
 
+**Disk Usage:** ~1GB (includes full dependencies, browser automation tools, and complete git history)
+
 ### Lightweight Installation (Reduced Disk Usage)
 
 For systems with limited disk space, use our minimal installation:
@@ -50,6 +52,8 @@ This uses:
 - Minimal dependencies only
 - No-recommends package installation
 - Automatic cleanup script
+
+**Disk Usage:** ~200MB (80% reduction compared to full installation)
 
 ### Docker Installation
 
