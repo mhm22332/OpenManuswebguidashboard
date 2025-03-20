@@ -155,9 +155,22 @@ Then open your browser and navigate to:
 http://localhost:8000
 ```
 
+The web dashboard has been enhanced with robust error handling and diagnostic information, making it easier to troubleshoot issues in different environments. If you encounter any problems, detailed error messages will help identify the cause.
+
 <p align="center">
   <img src="assets/web_dashboard.jpg" width="800" alt="OpenManus Web Dashboard"/>
 </p>
+
+## Troubleshooting
+
+If you encounter issues with the web dashboard:
+
+1. Check the console output for detailed error messages and diagnostic information
+2. Ensure all dependencies are correctly installed with `pip install -r requirements.txt`
+3. Verify your Python environment is properly configured (Python 3.12+ recommended)
+4. Make sure your `config.toml` file is correctly set up with valid API keys
+
+For container environments, the web dashboard includes specialized error handling to work around potential import issues.
 
 ## How to contribute
 
