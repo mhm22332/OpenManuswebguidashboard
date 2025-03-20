@@ -37,8 +37,6 @@ wget -O - https://raw.githubusercontent.com/mhm22332/OpenManuswebguidashboard/ma
 
 This automatically installs all dependencies, clones the repository, and sets up the configuration.
 
-**Disk Usage:** ~1GB (includes full dependencies, browser automation tools, and complete git history)
-
 ### Lightweight Installation (Reduced Disk Usage)
 
 For systems with limited disk space, use our minimal installation:
@@ -52,8 +50,6 @@ This uses:
 - Minimal dependencies only
 - No-recommends package installation
 - Automatic cleanup script
-
-**Disk Usage:** ~200MB (80% reduction compared to full installation)
 
 ### Docker Installation
 
@@ -184,15 +180,32 @@ View and manage available agents and tools:
 - List installed agents and capabilities
 - Monitor tool usage and performance
 
+### 5. Troubleshooting Guide
+Get help resolving common issues:
+- Detailed error messages with suggested solutions
+- API key and authentication troubleshooting
+- Model configuration assistance
+- Connection and rate limit guidance
+
 ## 🛠️ Troubleshooting
 
 If you encounter issues:
 
-1. **Check the console output** for detailed error messages and diagnostic information
-2. **Verify dependencies** are correctly installed with `pip install -r requirements.txt`
-3. **Check your Python version** - Python 3.12+ is recommended
-4. **Validate your config.toml** file has the correct API keys and endpoints
-5. **For container environments**, we've added specialized error handling to work around import issues
+1. **Check the Troubleshooting tab** in the web dashboard for common solutions
+2. **Review error messages** which now include specific issues and remediation steps
+3. **Check the console output** for detailed error messages and diagnostic information
+4. **Verify dependencies** are correctly installed with `pip install -r requirements.txt`
+5. **Check your Python version** - Python 3.12+ is recommended
+6. **Validate your config.toml** file has the correct API keys and endpoints
+7. **For container environments**, we've added specialized error handling to work around import issues
+
+### Common Error Types
+The dashboard now provides specific error handling for:
+- Missing or invalid API keys (401 errors)
+- Model configuration issues (404 errors)
+- Rate limit exceeded errors (429 errors)
+- Timeout or network issues (504 errors)
+- General server errors with detailed diagnostics
 
 ## 🤝 Contributing
 
