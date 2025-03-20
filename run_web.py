@@ -29,12 +29,8 @@ except ImportError as e:
     print("Please make sure uvicorn is installed: pip install uvicorn")
     sys.exit(1)
 
+# Try importing the module directly with error handling instead of using importlib.util
 try:
-    # First check if the module exists without importing it
-    if importlib.util.find_spec("app.web.server") is None:
-        print("Error: Module app.web.server doesn't exist")
-        sys.exit(1)
-
     # Try importing the module
     from app.web.server import app
     print("Successfully imported app.web.server")
