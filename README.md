@@ -42,7 +42,7 @@ conda activate open_manus
 
 ```bash
 git clone git clone https://github.com/mhm22332/OpenManuswebguidashboard.git
-cd OpenManus
+cd OpenManuswebguidashboard
 ```
 
 3. Install dependencies:
@@ -63,7 +63,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ```bash
 git clone https://github.com/mhm22332/OpenManuswebguidashboard.git
-cd OpenManus
+cd OpenManuswebguidashboard
 ```
 
 3. Create a new virtual environment and activate it:
