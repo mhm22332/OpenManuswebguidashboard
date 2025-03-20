@@ -37,6 +37,36 @@ wget -O - https://raw.githubusercontent.com/mhm22332/OpenManuswebguidashboard/ma
 
 This automatically installs all dependencies, clones the repository, and sets up the configuration.
 
+### Lightweight Installation (Reduced Disk Usage)
+
+For systems with limited disk space, use our minimal installation:
+
+```bash
+wget -O - https://raw.githubusercontent.com/mhm22332/OpenManuswebguidashboard/main/install-minimal.sh | sudo bash
+```
+
+This uses:
+- Shallow git clone (saves ~70% disk space)
+- Minimal dependencies only
+- No-recommends package installation
+- Automatic cleanup script
+
+### Docker Installation
+
+For containerized deployment with minimal overhead:
+
+```bash
+# Clone repository (only for Dockerfile)
+git clone --depth=1 https://github.com/mhm22332/OpenManuswebguidashboard.git
+cd OpenManuswebguidashboard
+
+# Build and run container
+docker build -t openmanus-web .
+docker run -p 8000:8000 openmanus-web
+```
+
+Then access at http://localhost:8000
+
 ### Using Conda
 
 ```bash
