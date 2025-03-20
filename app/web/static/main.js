@@ -34,6 +34,49 @@ document.addEventListener('DOMContentLoaded', function () {
             this.classList.add('active');
         });
     });
+
+    // Initialize tab switching
+    const tabs = document.querySelectorAll('[data-bs-toggle="tab"]');
+    tabs.forEach(tab => {
+        tab.addEventListener('shown.bs.tab', function (event) {
+            const targetId = event.target.getAttribute('href');
+            if (targetId === '#stats-section') {
+                // Refresh charts when switching to stats tab
+                window.requestAnimationFrame(() => {
+                    if (window.requestsChart) window.requestsChart.update();
+                    if (window.modelsChart) window.modelsChart.update();
+                });
+            }
+        });
+    });
+
+    // Set up model suggestions for forms
+    updateModelSuggestions('api-type', 'model');
+    updateModelSuggestions('edit-api-type', 'edit-model');
+
+    // Set up form submission handlers
+    document.getElementById('save-profile').addEventListener('click', saveNewProfile);
+    document.getElementById('update-profile').addEventListener('click', updateProfile);
+
+    // Set up prompt submission
+    document.getElementById('send-prompt').addEventListener('click', sendPrompt);
+    document.getElementById('prompt-input').addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendPrompt();
+        }
+    });
+
+    // Clear log button
+    document.getElementById('clear-log').addEventListener('click', function () {
+        document.getElementById('execution-log').innerHTML = '';
+    });
+
+    // New profile button
+    document.getElementById('new-profile-btn').addEventListener('click', function () {
+        document.getElementById('new-profile-form').reset();
+        new bootstrap.Modal(document.getElementById('newProfileModal')).show();
+    });
 });
 
 // Initialize charts
@@ -503,4 +546,71 @@ function formatMessageContent(content) {
     });
 
     return formatted;
+}
+
+// Helper function to update model suggestions based on API type
+function updateModelSuggestions(apiTypeSelectId, modelInputId) {
+    const apiTypeSelect = document.getElementById(apiTypeSelectId);
+    const modelInput = document.getElementById(modelInputId);
+
+    apiTypeSelect.addEventListener('change', function () {
+        const apiType = this.value;
+
+        // Clear any existing datalist
+        let dataListId = modelInputId + '-suggestions';
+        let existingDatalist = document.getElementById(dataListId);
+        if (existingDatalist) {
+            existingDatalist.remove();
+        }
+
+        // Create new datalist
+        const datalist = document.createElement('datalist');
+        datalist.id = dataListId;
+
+        // Add suggestions based on API type
+        switch (apiType) {
+            case 'anthropic':
+                addSuggestions(datalist, [
+                    'claude-3-7-sonnet-20250219',
+                    'claude-3-5-sonnet-20240620',
+                    'claude-3-haiku-20240307'
+                ]);
+                modelInput.placeholder = "e.g., claude-3-7-sonnet-20250219";
+                break;
+            case 'openai':
+                addSuggestions(datalist, [
+                    'gpt-4o',
+                    'gpt-4-turbo',
+                    'gpt-3.5-turbo'
+                ]);
+                modelInput.placeholder = "e.g., gpt-4o";
+                break;
+            case 'azure':
+                modelInput.placeholder = "Your Azure deployment model name";
+                break;
+            case 'ollama':
+                addSuggestions(datalist, [
+                    'llama3.2',
+                    'mistral',
+                    'llama3.2-vision'
+                ]);
+                modelInput.placeholder = "e.g., llama3.2";
+                break;
+            default:
+                modelInput.placeholder = "Model name";
+        }
+
+        // Add datalist to document and connect to input
+        document.body.appendChild(datalist);
+        modelInput.setAttribute('list', dataListId);
+    });
+}
+
+// Helper function to add options to datalist
+function addSuggestions(datalist, suggestions) {
+    suggestions.forEach(suggestion => {
+        const option = document.createElement('option');
+        option.value = suggestion;
+        datalist.appendChild(option);
+    });
 }
