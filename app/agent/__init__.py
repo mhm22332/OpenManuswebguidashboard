@@ -16,3 +16,20 @@ __all__ = [
     "ToolCallAgent",
     "MCPAgent",
 ]
+
+def get_all_agents():
+    """
+    Return a dictionary of all available agents.
+
+    Returns:
+        dict: A dictionary mapping agent names to agent classes
+    """
+    return {
+        "BaseAgent": BaseAgent,
+        "BrowserAgent": BrowserAgent,
+        "MCPAgent": MCPAgent,
+        "PlanningAgent": PlanningAgent,
+        "ReActAgent": ReActAgent,
+        "SWEAgent": SWEAgent,
+        "ToolCallAgent": ToolCallAgent,
+    }

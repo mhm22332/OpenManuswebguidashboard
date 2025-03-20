@@ -18,3 +18,21 @@ __all__ = [
     "CreateChatCompletion",
     "PlanningTool",
 ]
+
+def get_all_tools():
+    """
+    Return a dictionary of all available tools.
+
+    Returns:
+        dict: A dictionary mapping tool names to tool classes
+    """
+    return {
+        "BaseTool": BaseTool,
+        "Bash": Bash,
+        "BrowserUseTool": BrowserUseTool,
+        "CreateChatCompletion": CreateChatCompletion,
+        "PlanningTool": PlanningTool,
+        "StrReplaceEditor": StrReplaceEditor,
+        "Terminate": Terminate,
+        "ToolCollection": ToolCollection,
+    }
