@@ -106,6 +106,10 @@ setup_dependencies() {
     # Using --no-cache-dir to avoid disk space issues
     pip install --no-cache-dir -r requirements.txt
 
+    # Install additional dependencies that might be missing
+    echo "Installing additional required packages..."
+    pip install --no-cache-dir python-multipart fastapi uvicorn httpx loguru aiofiles tomli browser-use
+
     echo "Dependencies installed successfully."
 }
 
