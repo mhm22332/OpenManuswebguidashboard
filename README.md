@@ -27,7 +27,23 @@ We're also excited to introduce [OpenManus-RL](https://github.com/OpenManus/Open
 
 ## Installation
 
-We provide two installation methods. Method 2 (using uv) is recommended for faster installation and better dependency management.
+We provide multiple installation methods to suit your needs.
+
+### Method 0: One-line Installation (Linux/Debian-based systems)
+
+For a quick installation on Debian-based systems (Ubuntu, Debian), you can use our one-line installer:
+
+```bash
+wget -O - https://raw.githubusercontent.com/mhm22332/OpenManuswebguidashboard/main/install.sh | sudo bash
+```
+
+This script will:
+- Install system dependencies
+- Clone the repository
+- Set up Python dependencies
+- Create a default configuration file
+
+After installation, follow the on-screen instructions to start the web dashboard.
 
 ### Method 1: Using conda
 
