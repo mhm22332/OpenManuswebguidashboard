@@ -114,21 +114,31 @@ cp config/config.example.toml config/config.toml
 
 2. Edit `config/config.toml` to add your API keys and customize settings:
 
+The default configuration uses Claude 3.7 Sonnet:
+
 ```toml
 # Global LLM configuration
 [llm]
-model = "gpt-4o"
-base_url = "https://api.openai.com/v1"
-api_key = "sk-..."  # Replace with your actual API key
-max_tokens = 4096
-temperature = 0.0
-
-# Optional configuration for specific LLM models
-[llm.vision]
-model = "gpt-4o"
-base_url = "https://api.openai.com/v1"
-api_key = "sk-..."  # Replace with your actual API key
+model = "claude-3-7-sonnet-20250219"        # The LLM model to use
+base_url = "https://api.anthropic.com/v1/"  # API endpoint URL
+api_key = "sk-ant-..."                      # Your Anthropic API key
+max_tokens = 8192                           # Maximum number of tokens in the response
+temperature = 0.0                           # Controls randomness
 ```
+
+To use OpenAI models instead, update the configuration as follows:
+
+```toml
+# Global LLM configuration
+[llm]
+model = "gpt-4o"                           # The OpenAI model to use
+base_url = "https://api.openai.com/v1"     # OpenAI API endpoint
+api_key = "sk-..."                         # Your OpenAI API key
+max_tokens = 4096                          # Maximum tokens for response
+temperature = 0.0                          # Controls randomness
+```
+
+The configuration also supports other providers like AWS Bedrock, Azure OpenAI, and Ollama. See the example config file for more options.
 
 ## Quick Start
 
