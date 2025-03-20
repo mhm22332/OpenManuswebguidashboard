@@ -463,15 +463,55 @@ async function sendPrompt() {
                     parseInt(document.getElementById('total-tokens').textContent) + data.usage.total_tokens;
             }
         } else {
-            // Show error message
-            addMessageToChat('system', 'Error: Failed to get response from server');
+            // Show detailed error message based on response
+            try {
+                const errorData = await response.json();
+                let errorMessage = 'Error: Failed to get response from server';
+                let troubleshootingTip = '';
+
+                if (errorData.message) {
+                    errorMessage = `Error: ${errorData.message}`;
+                }
+
+                // Add troubleshooting tips based on status code and error type
+                switch (response.status) {
+                    case 401:
+                        troubleshootingTip = 'Please check your API key in config.toml or try adding it through the Settings panel.';
+                        break;
+                    case 404:
+                        troubleshootingTip = 'The model may not exist or be misspelled. Check the model name in your configuration.';
+                        break;
+                    case 429:
+                        troubleshootingTip = 'You have exceeded your quota or rate limit. Wait a few minutes or check your subscription.';
+                        break;
+                    case 500:
+                        troubleshootingTip = 'An internal server error occurred. Check the terminal for more details.';
+                        break;
+                    case 504:
+                        troubleshootingTip = 'The request timed out. Check your internet connection or try again later.';
+                        break;
+                }
+
+                if (troubleshootingTip) {
+                    errorMessage += `\n\nTroubleshooting tip: ${troubleshootingTip}`;
+                }
+
+                addMessageToChat('system', errorMessage);
+            } catch (parseError) {
+                // Fallback if response is not valid JSON
+                addMessageToChat('system', `Error: Failed to get response from server (HTTP ${response.status})`);
+            }
         }
     } catch (error) {
         console.error('Error sending prompt:', error);
         // Remove thinking indicator
         thinkingMsg.remove();
-        // Show error message
-        addMessageToChat('system', `Error: ${error.message}`);
+        // Show error message with troubleshooting tip
+        let errorMessage = `Error: ${error.message}`;
+        if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+            errorMessage += '\n\nTroubleshooting tip: Check if the server is running and your internet connection is working.';
+        }
+        addMessageToChat('system', errorMessage);
     } finally {
         // Re-enable input
         promptInput.disabled = false;

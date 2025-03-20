@@ -43,6 +43,11 @@
                                 <i class="bi bi-boxes me-2"></i>Modules
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#troubleshooting-section" data-bs-toggle="tab">
+                                <i class="bi bi-question-circle me-2"></i>Troubleshooting
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -246,6 +251,163 @@
                                             <!-- Tools will be loaded here -->
                                         </ul>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Troubleshooting Section -->
+                    <div class="tab-pane fade" id="troubleshooting-section">
+                        <div
+                            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Troubleshooting</h1>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Common Issues and Solutions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="accordion" id="troubleshootingAccordion">
+                                    <!-- API Key Issues -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingOne">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapseOne" aria-expanded="true"
+                                                aria-controls="collapseOne">
+                                                API Key Issues
+                                            </button>
+                                        </h2>
+                                        <div id="collapseOne" class="accordion-collapse collapse show"
+                                            aria-labelledby="headingOne" data-bs-parent="#troubleshootingAccordion">
+                                            <div class="accordion-body">
+                                                <p><strong>Error:</strong> "Missing or invalid API key" or
+                                                    "Authentication error"</p>
+                                                <p><strong>Solution:</strong></p>
+                                                <ol>
+                                                    <li>Check that you've added your API key to
+                                                        <code>config/config.toml</code></li>
+                                                    <li>Verify the API key is valid and not expired</li>
+                                                    <li>Make sure the API key has the correct permissions</li>
+                                                    <li>If using OpenAI, check your <a
+                                                            href="https://platform.openai.com/account/usage"
+                                                            target="_blank">quota usage</a></li>
+                                                    <li>If using Claude, verify your <a
+                                                            href="https://console.anthropic.com/account/keys"
+                                                            target="_blank">API key status</a></li>
+                                                </ol>
+                                                <div class="alert alert-info">
+                                                    <i class="bi bi-info-circle me-2"></i>You can add your API key
+                                                    through the LLM Configuration tab.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Model Not Found -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingTwo">
+                                            <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                                aria-expanded="false" aria-controls="collapseTwo">
+                                                Model Not Found
+                                            </button>
+                                        </h2>
+                                        <div id="collapseTwo" class="accordion-collapse collapse"
+                                            aria-labelledby="headingTwo" data-bs-parent="#troubleshootingAccordion">
+                                            <div class="accordion-body">
+                                                <p><strong>Error:</strong> "The specified model does not exist" or
+                                                    "Model not found"</p>
+                                                <p><strong>Solution:</strong></p>
+                                                <ol>
+                                                    <li>Check that the model name is spelled correctly</li>
+                                                    <li>Verify that you have access to the specified model</li>
+                                                    <li>For OpenAI models, use names like <code>gpt-4o</code> or
+                                                        <code>gpt-3.5-turbo</code></li>
+                                                    <li>For Claude models, use names like
+                                                        <code>claude-3-7-sonnet-20250219</code></li>
+                                                </ol>
+                                                <div class="alert alert-info">
+                                                    <i class="bi bi-info-circle me-2"></i>Choose from available models
+                                                    in the "Select Model" dropdown.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Rate Limits -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingThree">
+                                            <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapseThree"
+                                                aria-expanded="false" aria-controls="collapseThree">
+                                                Rate Limits Exceeded
+                                            </button>
+                                        </h2>
+                                        <div id="collapseThree" class="accordion-collapse collapse"
+                                            aria-labelledby="headingThree" data-bs-parent="#troubleshootingAccordion">
+                                            <div class="accordion-body">
+                                                <p><strong>Error:</strong> "API rate limit or quota exceeded"</p>
+                                                <p><strong>Solution:</strong></p>
+                                                <ol>
+                                                    <li>Wait a few minutes and try again</li>
+                                                    <li>Check your usage limits on your provider's dashboard</li>
+                                                    <li>Consider upgrading your API subscription plan</li>
+                                                    <li>Try a different model with higher rate limits</li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Connection Issues -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingFour">
+                                            <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapseFour"
+                                                aria-expanded="false" aria-controls="collapseFour">
+                                                Connection Issues
+                                            </button>
+                                        </h2>
+                                        <div id="collapseFour" class="accordion-collapse collapse"
+                                            aria-labelledby="headingFour" data-bs-parent="#troubleshootingAccordion">
+                                            <div class="accordion-body">
+                                                <p><strong>Error:</strong> "NetworkError", "Failed to fetch", or
+                                                    "Request timed out"</p>
+                                                <p><strong>Solution:</strong></p>
+                                                <ol>
+                                                    <li>Check your internet connection</li>
+                                                    <li>Verify that the server is running</li>
+                                                    <li>Check if your firewall is blocking connections</li>
+                                                    <li>If using a VPN, try disabling it temporarily</li>
+                                                    <li>Restart the server and try again</li>
+                                                </ol>
+                                                <div class="alert alert-warning">
+                                                    <i class="bi bi-exclamation-triangle me-2"></i>If running in a
+                                                    Docker container, make sure port 8000 is properly exposed.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">Configuration Help</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>The OpenManus configuration file is located at <code>config/config.toml</code>.</p>
+                                <p>For API configuration, you need:</p>
+                                <ul>
+                                    <li><strong>API Key:</strong> From your LLM provider (OpenAI, Anthropic, etc.)</li>
+                                    <li><strong>Model Name:</strong> The specific model to use (e.g., gpt-4o,
+                                        claude-3-7-sonnet-20250219)</li>
+                                    <li><strong>Base URL:</strong> The API endpoint (usually default is fine)</li>
+                                </ul>
+                                <div class="alert alert-success">
+                                    <i class="bi bi-lightbulb me-2"></i>You can edit these settings directly in the LLM
+                                    Configuration tab.
                                 </div>
                             </div>
                         </div>

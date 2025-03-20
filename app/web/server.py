@@ -179,9 +179,20 @@ async def process_prompt(prompt_request: PromptRequest):
             try:
                 agent_instance = MCPAgent()
             except Exception as e:
+                error_message = str(e)
+                if "API key" in error_message.lower() or "authentication" in error_message.lower():
+                    return JSONResponse(
+                        status_code=401,
+                        content={"error": "API key issue", "message": f"Missing or invalid API key. Please check your config.toml file.", "details": str(e)}
+                    )
+                elif "model" in error_message.lower():
+                    return JSONResponse(
+                        status_code=400,
+                        content={"error": "Model configuration issue", "message": "The specified model is invalid or unavailable.", "details": str(e)}
+                    )
                 return JSONResponse(
                     status_code=500,
-                    content={"error": f"Failed to initialize agent: {str(e)}"}
+                    content={"error": "Agent initialization failed", "message": f"Failed to initialize agent. Check your configuration.", "details": str(e)}
                 )
 
         # Get today's date for stats
@@ -204,7 +215,31 @@ async def process_prompt(prompt_request: PromptRequest):
         try:
             response = await agent_instance.run(prompt_request.prompt)
         except Exception as e:
-            response = f"Error processing prompt: {str(e)}"
+            error_message = str(e)
+            if "quota" in error_message.lower() or "rate limit" in error_message.lower() or "exceeded" in error_message.lower():
+                return JSONResponse(
+                    status_code=429,
+                    content={"error": "Rate limit exceeded", "message": "API rate limit or quota exceeded. Please try again later.", "details": error_message}
+                )
+            elif "key" in error_message.lower() or "auth" in error_message.lower():
+                return JSONResponse(
+                    status_code=401,
+                    content={"error": "Authentication error", "message": "Invalid or expired API key. Please check your API key.", "details": error_message}
+                )
+            elif "model" in error_message.lower() and "not found" in error_message.lower():
+                return JSONResponse(
+                    status_code=404,
+                    content={"error": "Model not found", "message": "The specified model does not exist or is not available.", "details": error_message}
+                )
+            elif "timeout" in error_message.lower() or "timed out" in error_message.lower():
+                return JSONResponse(
+                    status_code=504,
+                    content={"error": "Request timeout", "message": "Request to LLM provider timed out. Please try again.", "details": error_message}
+                )
+            return JSONResponse(
+                status_code=500,
+                content={"error": "Prompt processing error", "message": f"Error processing prompt: {error_message}", "details": error_message}
+            )
 
         # Estimate token usage (in a real implementation, you'd get this from the API response)
         estimated_prompt_tokens = len(prompt_request.prompt.split()) * 1.3
