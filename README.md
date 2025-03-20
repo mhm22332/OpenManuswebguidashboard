@@ -41,7 +41,7 @@ conda activate open_manus
 2. Clone the repository:
 
 ```bash
-git clone https://github.com/mannaandpoem/OpenManus.git
+git clone git clone https://github.com/mhm22332/OpenManuswebguidashboard.git
 cd OpenManus
 ```
 
@@ -62,7 +62,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 2. Clone the repository:
 
 ```bash
-git clone https://github.com/mannaandpoem/OpenManus.git
+git clone https://github.com/mhm22332/OpenManuswebguidashboard.git
 cd OpenManus
 ```
 
