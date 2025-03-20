@@ -1,6 +1,6 @@
 #!/bin/bash
-# OpenManus Robust Installation Script
-# With enhanced handling for large packages and system package conflicts
+# OpenManus Installation Script with Virtual Environment
+# Completely isolated from system packages to avoid conflicts
 
 set -e  # Exit on error
 
@@ -30,7 +30,7 @@ check_space() {
         TMP_SPACE=$(df -h /tmp | awk 'NR==2 {print $4}')
         echo "/tmp is a separate partition with $TMP_SPACE available"
 
-        # If /tmp has less than 1GB free, use a custom temp directory
+        # If /tmp has limited space, use a custom temp directory
         if [[ $TMP_SPACE =~ ^[0-9.]+M$ ]] || [[ $TMP_SPACE =~ ^[0-9]+K$ ]]; then
             echo "WARNING: /tmp has limited space. Using custom temp directory."
             export TMPDIR=/var/tmp/openmanus-install
@@ -42,24 +42,16 @@ check_space() {
     echo "Resource check completed."
 }
 
-# Function to install system dependencies
+# Function to install minimal system dependencies
 install_system_deps() {
-    echo "Installing system dependencies..."
+    echo "Installing minimal system dependencies..."
     apt-get update
 
     # Clean apt cache first to make space
     apt-get clean
 
-    # Install system dependencies - prioritize apt packages over pip
-    echo "Installing Python and system packages..."
-    apt-get install -y git python3 python3-dev python3-pip python3-venv
-
-    echo "Installing FastAPI and Uvicorn via apt..."
-    apt-get install -y python3-fastapi python3-uvicorn
-
-    # Install other common dependencies via apt to avoid pip conflicts
-    echo "Installing additional system packages..."
-    apt-get install -y python3-pydantic python3-aiofiles python3-tomli python3-httpx
+    # Only install git and Python3 with venv support
+    apt-get install -y git python3 python3-venv python3-pip
 
     echo "System dependencies installed successfully."
 }
@@ -78,26 +70,25 @@ clone_repo() {
     echo "Repository cloned/updated successfully."
 }
 
-# Create a custom requirements file without system packages
-create_custom_requirements() {
-    echo "Creating custom requirements file to avoid conflicts..."
+# Function to create and setup Python virtual environment
+setup_venv() {
+    echo "Creating Python virtual environment..."
 
-    # Create a list of packages already installed by system
-    SYSTEM_PACKAGES="fastapi uvicorn pydantic aiofiles tomli httpx starlette"
+    # Create virtual environment
+    python3 -m venv .venv
 
-    # Create a temporary requirements file excluding system packages
-    if [ -f "requirements.txt" ]; then
-        cat requirements.txt | grep -v -E "^($(echo $SYSTEM_PACKAGES | tr ' ' '|'))[^a-zA-Z0-9]" > custom_requirements.txt
-        echo "Created custom_requirements.txt without system-managed packages."
-    else
-        echo "WARNING: requirements.txt not found!"
-        touch custom_requirements.txt
-    fi
+    # Activate virtual environment
+    source .venv/bin/activate
+
+    # Upgrade pip in the virtual environment
+    pip install --upgrade pip
+
+    echo "Virtual environment created and activated."
 }
 
-# Function to setup Python environment and install dependencies
-setup_python_env() {
-    echo "Setting up Python environment..."
+# Function to setup configuration and install dependencies in venv
+setup_dependencies() {
+    echo "Setting up configuration..."
 
     # Create config directory if it doesn't exist
     if [ ! -d "config" ]; then
@@ -110,31 +101,42 @@ setup_python_env() {
         echo "Created config.toml from example. Please edit it with your API keys."
     fi
 
-    # Create custom requirements file
-    create_custom_requirements
+    echo "Installing Python dependencies in virtual environment..."
+    # Install dependencies inside the virtual environment
+    # Using --no-cache-dir to avoid disk space issues
+    pip install --no-cache-dir -r requirements.txt
 
-    echo "Installing Python dependencies..."
-    # Use --ignore-installed to avoid conflicts with system packages
-    echo "Installing remaining dependencies..."
-    pip3 install --break-system-packages --no-cache-dir --ignore-installed -r custom_requirements.txt
+    echo "Dependencies installed successfully."
+}
 
-    echo "Python environment setup complete."
+# Create a launcher script
+create_launcher() {
+    echo "Creating launcher script..."
+
+    cat > run_dashboard.sh << EOF
+#!/bin/bash
+# Launcher for OpenManus Web Dashboard
+
+cd "\$(dirname "\$0")"
+source .venv/bin/activate
+python3 run_web.py
+
+EOF
+
+    chmod +x run_dashboard.sh
+    echo "Launcher script created."
 }
 
 # Create cleanup function to remove temporary files
 cleanup() {
     echo "Performing cleanup..."
-    # Remove pip cache
-    rm -rf ~/.cache/pip/*
     # Clean apt cache
     apt-get clean
-    # Remove temporary files
+    # Remove pip cache in virtual environment
+    rm -rf .venv/pip-cache
+    # Remove Python cache files
     find . -type d -name __pycache__ -exec rm -rf {} +
     find . -type f -name "*.pyc" -delete
-    # Remove temporary requirements file
-    if [ -f "custom_requirements.txt" ]; then
-        rm custom_requirements.txt
-    fi
     echo "Cleanup completed."
 }
 
@@ -143,7 +145,9 @@ main() {
     check_space
     install_system_deps
     clone_repo
-    setup_python_env
+    setup_venv
+    setup_dependencies
+    create_launcher
     cleanup
 
     echo "========================================================"
@@ -151,7 +155,7 @@ main() {
     echo "========================================================"
     echo "To run OpenManus Web Dashboard:"
     echo "  cd OpenManuswebguidashboard"
-    echo "  python3 run_web.py"
+    echo "  ./run_dashboard.sh"
     echo ""
     echo "Then open http://localhost:8000 in your browser"
     echo ""
